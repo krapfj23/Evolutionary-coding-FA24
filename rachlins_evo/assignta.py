@@ -90,6 +90,16 @@ def minimize_nonpref(test, tas_clean):
 
 
 
+# Agents to optimize solutions
+
+def swap_overallocated_sections(array, tadata, testdata):
+    """
+    Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred
+    """
+    section_counts = np.sum(array)
+
+
+
 
 
 def main():
