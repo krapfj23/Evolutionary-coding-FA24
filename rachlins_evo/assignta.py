@@ -92,12 +92,18 @@ def minimize_nonpref(test, tas_clean):
 
 # Agents to optimize solutions
 
-def swap_overallocated_sections(array, tadata, testdata):
+def swap_overallocated_sections(array, ta_data, max_assigned):
     """
     Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred
     """
-    section_counts = np.sum(array)
 
+    # sums the count of TAs assigned for each row
+    section_counts = np.sum(array, axis = 1)
+
+    # identify over and under allocated TAs
+    '''
+    compare the section counts (calculated above) with the max assigned column in tas.csv file
+    '''
 
 
 
@@ -124,6 +130,6 @@ def main():
    print("Over", overallocation(tas_max, data))
    #test2 = np.loadtxt()
    #test3 = np.loadtxt()
-   print("TC", time_conflicts(data, SECTION_DICT)
+   print("TC", time_conflicts(data, SECTION_DICT))
 main()
 
