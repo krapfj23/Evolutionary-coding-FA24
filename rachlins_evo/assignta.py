@@ -115,19 +115,15 @@ def main():
    tas2_unp = tas1_unp.replace("W", 0)
    tas_unp = tas2_unp.replace("P", 1)
    tas_max = np.array(tas["max_assigned"]).reshape(1, -1)
-   #section_dict = {0: , 1:, 2:, 3:, 4:, 5:, 6:, 7:, 8:, 9:, 10:, 11, 12, 13, 14, 15, 16}
-
 
    data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
-   print(tas_unw)
-   print(data.shape)
-   """print("Non pref", minimize_nonpref(data, tas_unp))
-   print("Unw", minimize_unw(data, tas_unw))"""
+  
+   print("Non pref", minimize_nonpref(data, tas_unp))
+   print("Unw", minimize_unw(data, tas_unw))
    print("Under", minimize_under(data, tas_min))
-   """print("Over", overallocation(tas_max, data))
-    #test2 = np.loadtxt()
+   print("Over", overallocation(tas_max, data))
+   #test2 = np.loadtxt()
    #test3 = np.loadtxt()
-   #print(tas.head())
-   print("TC", time_conflicts(data, SECTION_DICT)"""
+   print("TC", time_conflicts(data, SECTION_DICT)
 main()
 
