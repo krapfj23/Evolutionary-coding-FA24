@@ -24,6 +24,7 @@ and unpreferred=0, then all TAs are assigned to sections they prefer!
 import random
 import pandas as pd
 import numpy as np
+from jupyter_server.services.config.handlers import section_name_regex
 
 SECTION_DICT = {17: 'R 1145-125', 1: 'W 950-1130', 2: 'W 950-1130', 3: 'W 950-1130', 4: 'W 1145-125', 5: 'W 1145-125',
                 6: 'W 250-430', 7: 'W 250-430', 8: 'W 250-430', 9: 'W 440-630', 10: 'R 950-1130', 11: 'R 950-1130',
@@ -92,13 +93,43 @@ def minimize_nonpref(test, tas_clean):
 
 # Agents to optimize solutions
 
-def swap_overallocated_sections(array, ta_data, max_assigned):
+def swap_tas(array, ta_data, max_assigned = 'max_assigned'):
     """
     Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred
     """
 
     # sums the count of TAs assigned for each row
     section_counts = np.sum(array, axis = 1)
+
+    # identify over and under allocated TAs
+    overallocated = [i for i in range(len(section_counts)) if section_counts[i] > ta_data.iloc[i][max_assigned]]
+    underallocated = [i for i in range(len(section_counts)) if section_counts[i] < ta_data.iloc[i][max_assigned]]
+
+    if len(overallocated) == 0 and len(underallocated) == 0:
+        print('TAs allocated correctly, no changes needed')
+
+    # picking random TA in over and under allocated lists
+    over_ta = random.choice(overallocated)
+    under_ta = random.choice(underallocated)
+
+    # finding a section assigned to the over-allocated TA
+    over_ta_sections = np.where(array[over_ta] == 1)[0]
+
+    # randomly selecting a section to transfer
+    for section in over_ta_sections:
+        if array[under_ta, section] == 0:
+            array[over_ta, section] = 0
+            array[under_ta, section] = 1
+            print(f"Swapped section {section} from TA {over_ta} to TA {under_ta}")
+            return array
+
+    print('No swaps were made')
+    return array
+
+
+
+
+
 
     # identify over and under allocated TAs
     '''
