@@ -131,15 +131,9 @@ def swap_tas(array, ta_data, max_assigned = 'max_assigned'):
 
 
 
-    # identify over and under allocated TAs
-    '''
-    compare the section counts (calculated above) with the max assigned column in tas.csv file
-    '''
-
-
-
 
 def main():
+
 
    sections = pd.read_csv("sections.csv")
    tas_min = np.array(sections["min_ta"]).reshape(1, -1)
@@ -162,5 +156,8 @@ def main():
    #test2 = np.loadtxt()
    #test3 = np.loadtxt()
    print("TC", time_conflicts(data, SECTION_DICT))
+
+
+
 main()
 
