@@ -129,6 +129,32 @@ def swap_tas(array, ta_data, max_assigned = 'max_assigned'):
 
 
 
+def balance_sections(array, section_data, min_ta_col='min_ta', max_ta_col='max_ta'):
+    """
+    Agent 2: Balances sections by reassigning TAs from randomly selected over-allocated sections to
+    randomly selected under-allocated sections
+    """
+
+    # counting number of TAs in each section
+    ta_counts = np.sum(array, axis = 0)
+
+    # identifying over and under allocation sections (within range)
+    overallocated_sections = [i for i in range(len(ta_counts)) if ta_counts[i] > section_data.iloc[i][max_ta_col]]
+    underallocated_sections = [i for i in range(len(ta_counts)) if ta_counts[i] < section_data.iloc[i][min_ta_col]]
+
+    if len(overallocated_sections) == 0 and len(underallocated_sections) == 0:
+        print('All sections are correctly allocated. No changes needed.')
+        return array
+
+    # randomly selecting an overallocated and underallocated section
+    over_section = random.choice(overallocated_sections)
+    under_section = random.choice(underallocated_sections)
+
+    # finding a TA assigned to the over-allocated section
+
+    over_section_tas = np.where(array[:, over_section] == 1)[0]
+
+
 
 
 
