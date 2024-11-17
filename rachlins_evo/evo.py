@@ -6,6 +6,7 @@ import random as rnd
 import copy
 from functools import reduce
 import numpy as np
+import time
 
 class Evo:
 
@@ -69,13 +70,23 @@ class Evo:
         nds = reduce(self.reduce_nds, self.pop.keys(), self.pop.keys())
         self.pop = {k: self.pop[k] for k in nds}
 
-    def evolve(self, n=1, dom=100, status=1000):
+    def evolve(self, n=1, dom=100, status=1000, time_limit=300):
         """ Run random agents n times
         n:  Number of agent invocations
         status: How frequently to output the current population
         """
         agent_names = list(self.agents.keys())
+
+        start_time = time.time()
+
         for i in range(n):
+
+            # checking if time limit has been exceeded
+            time_taken = time.time() - start_time
+            if time_taken >= time_limit:
+                print(f"Time limit of {time_limit} has been reached")
+                break
+
             pick = rnd.choice(agent_names)
             self.run_agent(pick)
 
