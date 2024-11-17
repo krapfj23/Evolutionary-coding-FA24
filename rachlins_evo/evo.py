@@ -69,7 +69,7 @@ class Evo:
         nds = reduce(self.reduce_nds, self.pop.keys(), self.pop.keys())
         self.pop = {k: self.pop[k] for k in nds}
 
-    def evolve(self, n=1, dom=1, status=1000, time_limit=300):
+    def evolve(self, n=100, dom=50, time_limit=None, status=10):
         """ Run random agents n times
         n:  Number of agent invocations
         status: How frequently to output the current population

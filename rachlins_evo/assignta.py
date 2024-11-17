@@ -151,11 +151,19 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
     overallocated_sec = [i for i in range(len(ta_counts)) if ta_counts[i] > section_data.iloc[i][max_ta_col]]
     underallocated_sec = [i for i in range(len(ta_counts)) if ta_counts[i] < section_data.iloc[i][min_ta_col]]
 
+    print("TA Counts:", ta_counts)
+    print("Under-allocated Sections:", underallocated_sec)
 
-
-    if len(overallocated_sec) == 0 and len(underallocated_sec) == 0:
-        print('All sections are correctly allocated. No changes needed.')
+    if not underallocated_sec:
+        print("No under-allocated sections. Rebalancing not needed.")
         return arrays
+
+        # If no over-allocated sections, attempt to redistribute from correctly allocated sections
+    if not overallocated_sec:
+        print("No over-allocated sections. Attempting redistribution from correctly allocated sections.")
+        potential_donors = [i for i in range(len(ta_counts)) if ta_counts[i] > 0]
+    else:
+        potential_donors = overallocated_sec
 
     # randomly selecting an overallocated and underallocated section
     over_section = random.choice(overallocated_sec)
@@ -219,9 +227,11 @@ def main():
 
     E.add_solution(data)
 
-    E.evolve(n=5000000, dom=100, status=100000)
+    E.evolve(time_limit=300, status=100)
 
-    #print(E)
+    print("Final population size:", len(E.pop))
+    for eval, sol in E.pop.items():
+        print(f"Solution {eval}: {sol}")
 
 
 main()
