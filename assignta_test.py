@@ -9,20 +9,20 @@ import numpy as np
 
 @pytest.fixture
 def test1():
-    x = np.loadtxt("test1.txt", delimiter=",", skiprows=0)
+    x = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
     print(x)
     return x
 
 
 @pytest.fixture
 def test2():
-    y = np.loadtxt("test2.txt", delimiter=",", skiprows=0)
+    y = np.loadtxt("test2.csv", delimiter=",", skiprows=0)
     return y
 
 
 @pytest.fixture
 def test3():
-    z = np.loadtxt("test3.txt", delimiter=",", skiprows=0)
+    z = np.loadtxt("test3.csv", delimiter=",", skiprows=0)
     return z
 
 
