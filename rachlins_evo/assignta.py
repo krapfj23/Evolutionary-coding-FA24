@@ -154,12 +154,20 @@ def balance_sections(array, section_data, min_ta_col='min_ta', max_ta_col='max_t
 
     over_section_tas = np.where(array[:, over_section] == 1)[0]
 
+    for ta in over_section_tas:
+        if array[ta, under_section] == 0:  # Ensure the TA isn't already assigned to the under-allocated section
+            array[ta, over_section] = 0
+            array[ta, under_section] = 1
+            print(f"Moved TA {ta} from section {over_section} to section {under_section}")
+            return array
 
+        # If no valid TA was found to move
+    print(f"No valid swaps found between section {over_section} and section {under_section}")
+    return array
 
 
 
 def main():
-
 
    sections = pd.read_csv("sections.csv")
    tas_min = np.array(sections["min_ta"]).reshape(1, -1)
