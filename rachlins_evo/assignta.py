@@ -107,18 +107,12 @@ def swap_tas(array, ta_data = TAS, max_assigned = 'max_assigned'):
     """
     Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred
     """
-    array = np.array(array)
-    section_counts = np.sum(array, axis=0)
-    print("Section Counts (1D):", section_counts)
-    print("TA Data (max_assigned) for first few TAs:", ta_data[max_assigned])
-
+    arrays = array[0]
+    section_counts = np.sum(arrays, axis=1)
 
     # identify over and under allocated TAs
     overallocated = [i for i in range(len(section_counts)) if section_counts[i] > ta_data.iloc[i][max_assigned]]
     underallocated = [i for i in range(len(section_counts)) if section_counts[i] < ta_data.iloc[i][max_assigned]]
-
-    print(overallocated)
-    print(underallocated)
 
     if len(overallocated) == 0 and len(underallocated) == 0:
         print('TAs allocated correctly, no changes needed')
@@ -128,7 +122,7 @@ def swap_tas(array, ta_data = TAS, max_assigned = 'max_assigned'):
     under_ta = random.choice(underallocated)
 
     # finding a section assigned to the over-allocated TA
-    over_ta_sections = np.where(array[over_ta] == 1)[0]
+    over_ta_sections = np.where(array[over_ta] == 1)
 
     # randomly selecting a section to transfer
     for section in over_ta_sections:
@@ -228,15 +222,15 @@ def main():
 
     # adding agents
     E.add_agent("Swap TAs", swap_tas, k=1)
+
+
     '''
     E.add_agent("Balance Sections", balance_sections, k=1)
 '''
 
     E.add_solution(data)
 
-    print(E)
-
-    E.evolve()
+    E.evolve(n=100000000)
 
     print(E)
 

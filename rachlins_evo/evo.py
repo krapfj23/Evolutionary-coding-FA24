@@ -27,6 +27,7 @@ class Evo:
 
     def add_solution(self, sol):
         """ Add a solution to the population   """
+        sol = np.array(sol)
         eval = tuple([(name, f(sol)) for name, f in self.fitness.items()])
         self.pop[eval] = sol   # ((name1, objval1), (name2, objval2)....)  ===> solution
 
