@@ -121,24 +121,20 @@ def swap_tas(array, ta_data = TAS, max_assigned = 'max_assigned'):
     over_ta = random.choice(overallocated)
     under_ta = random.choice(underallocated)
 
-    # finding a section assigned to the over-allocated TA
-    over_ta_sections = np.where(array[over_ta] == 1)
 
-    # randomly selecting a section to transfer
+    over_ta_sections = np.where(arrays[over_ta] == 1)[0]  # Extract the indices of the sections
+
     for section in over_ta_sections:
-        if array[under_ta, section] == 0:
-            array[over_ta, section] = 0
-            array[under_ta, section] = 1
+        if arrays[under_ta, section] == 0:  # Check if the underallocated TA is not assigned to this section
+            arrays[over_ta, section] = 0  # Remove section from over-allocated TA
+            arrays[under_ta, section] = 1  # Assign section to under-allocated TA
             print(f"Swapped section {section} from TA {over_ta} to TA {under_ta}")
-            return array
+            return arrays
 
     print('No swaps were made')
-    return array
+    return arrays
 
 
-
-
-'''
 
 def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta_col='max_ta'):
     """
@@ -146,10 +142,10 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
     randomly selected under-allocated sections
     """
 
+    arrays = array[0]
 
-    array = np.array(array)
     # Counting number of TAs in each section manually (as a list)
-    ta_counts = [sum(array[:, sec]) for sec in range(array.shape[1])]
+    ta_counts = np.sum(arrays, axis=0)
 
     # identifying over and under allocation sections (within range)
     overallocated_sec = [i for i in range(len(ta_counts)) if ta_counts[i] > section_data.iloc[i][max_ta_col]]
@@ -159,7 +155,7 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
 
     if len(overallocated_sec) == 0 and len(underallocated_sec) == 0:
         print('All sections are correctly allocated. No changes needed.')
-        return array
+        return arrays
 
     # randomly selecting an overallocated and underallocated section
     over_section = random.choice(overallocated_sec)
@@ -167,21 +163,20 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
 
     # finding a TA assigned to the over-allocated section
 
-    over_section_tas = np.where(array[:, over_section] == 1)[0]
+    over_section_tas = np.where(arrays[:, over_section] == 1)[0]
 
     for ta in over_section_tas:
-        if array[ta, under_section] == 0:  # Ensure the TA isn't already assigned to the under-allocated section
-            array[ta, over_section] = 0
-            array[ta, under_section] = 1
+        if arrays[ta, under_section] == 0:  # Ensure the TA isn't already assigned to the under-allocated section
+            arrays[ta, over_section] = 0
+            arrays[ta, under_section] = 1
             print(f"Moved TA {ta} from section {over_section} to section {under_section}")
-            return array
+            return arrays
 
         # If no valid TA was found to move
     print(f"No valid swaps found between section {over_section} and section {under_section}")
-    return array
+    return arrays
 
 
-'''
 
 
 
@@ -197,9 +192,6 @@ def main():
     tas_max = np.array(TAS["max_assigned"]).reshape(1, -1)
 
     data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
-    print("Data shape:", data.shape)  # This should show (43, 17)
-
-
 
     #print("Non pref", minimize_nonpref(data, tas_unp))
     #print("Unw", minimize_unw(data, tas_unw))
@@ -222,17 +214,14 @@ def main():
 
     # adding agents
     E.add_agent("Swap TAs", swap_tas, k=1)
-
-
-    '''
     E.add_agent("Balance Sections", balance_sections, k=1)
-'''
+
 
     E.add_solution(data)
 
-    E.evolve(n=100000000)
+    E.evolve(n=5000000, dom=100, status=100000)
 
-    print(E)
+    #print(E)
 
 
 main()

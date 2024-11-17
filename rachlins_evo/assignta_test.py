@@ -4,9 +4,6 @@ import pandas as pd
 import numpy as np
 
 
-
-
-
 @pytest.fixture
 def test1():
     x = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
