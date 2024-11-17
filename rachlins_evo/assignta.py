@@ -25,6 +25,8 @@ import random
 import pandas as pd
 import numpy as np
 from jupyter_server.services.config.handlers import section_name_regex
+from evo import Evo
+
 
 SECTION_DICT = {17: 'R 1145-125', 1: 'W 950-1130', 2: 'W 950-1130', 3: 'W 950-1130', 4: 'W 1145-125', 5: 'W 1145-125',
                 6: 'W 250-430', 7: 'W 250-430', 8: 'W 250-430', 9: 'W 440-630', 10: 'R 950-1130', 11: 'R 950-1130',
@@ -169,27 +171,45 @@ def balance_sections(array, section_data, min_ta_col='min_ta', max_ta_col='max_t
 
 def main():
 
-   sections = pd.read_csv("sections.csv")
-   tas_min = np.array(sections["min_ta"]).reshape(1, -1)
-   tas = pd.read_csv("tas.csv")
-   assigns = tas[["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" ]]
-   tas_1 = assigns.replace("U", 0)
-   tas_2unw = tas_1.replace("W", 1)
-   tas_unw = tas_2unw.replace("P", 1)
-   tas1_unp = assigns.replace("U", 1)
-   tas2_unp = tas1_unp.replace("W", 0)
-   tas_unp = tas2_unp.replace("P", 1)
-   tas_max = np.array(tas["max_assigned"]).reshape(1, -1)
+    sections = pd.read_csv("sections.csv")
+    tas_min = np.array(sections["min_ta"]).reshape(1, -1)
+    tas = pd.read_csv("tas.csv")
+    assigns = tas[["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" ]]
+    tas_1 = assigns.replace("U", 0)
+    tas_2unw = tas_1.replace("W", 1)
+    tas_unw = tas_2unw.replace("P", 1)
+    tas1_unp = assigns.replace("U", 1)
+    tas2_unp = tas1_unp.replace("W", 0)
+    tas_unp = tas2_unp.replace("P", 1)
+    tas_max = np.array(tas["max_assigned"]).reshape(1, -1)
 
-   data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
+    data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
   
-   print("Non pref", minimize_nonpref(data, tas_unp))
-   print("Unw", minimize_unw(data, tas_unw))
-   print("Under", minimize_under(data, tas_min))
-   print("Over", overallocation(tas_max, data))
-   #test2 = np.loadtxt()
-   #test3 = np.loadtxt()
-   print("TC", time_conflicts(data, SECTION_DICT))
+    print("Non pref", minimize_nonpref(data, tas_unp))
+    print("Unw", minimize_unw(data, tas_unw))
+    print("Under", minimize_under(data, tas_min))
+    print("Over", overallocation(tas_max, data))
+    #test2 = np.loadtxt()
+    #test3 = np.loadtxt()
+    print("TC", time_conflicts(data, SECTION_DICT))
+
+
+
+    E = Evo()
+
+    E.add_fitness_criteria('overallocation', overallocation)
+    E.add_fitness_criteria('time_conflicts', time_conflicts)
+    E.add_fitness_criteria('minimize_under', minimize_under)
+    E.add_fitness_criteria('minimize_unw', minimize_unw)
+    E.add_fitness_criteria('minimize_nonpref', minimize_nonpref)
+
+    E.add_agent('swap_tas', swap_tas, 1)
+    E.add_agent('balance_sections', balance_sections, 1)
+
+
+    E.evolve(n=1, dom=100, status=1000)
+
+
 
 
 

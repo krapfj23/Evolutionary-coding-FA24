@@ -97,5 +97,3 @@ class Evo:
             rslt += str(eval) + ":\t" + str(sol) + "\n"
         return rslt
 
-
-
