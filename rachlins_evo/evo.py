@@ -31,8 +31,6 @@ class Evo:
         self.pop[eval] = sol   # ((name1, objval1), (name2, objval2)....)  ===> solution
 
 
-
-
     def get_random_solutions(self, k=1):
         """ Pick k random solutions from the population """
         if len(self.pop) == 0: # no solutions in the population (This should never happen!)
@@ -70,7 +68,7 @@ class Evo:
         nds = reduce(self.reduce_nds, self.pop.keys(), self.pop.keys())
         self.pop = {k: self.pop[k] for k in nds}
 
-    def evolve(self, n=1, dom=100, status=1000, time_limit=300):
+    def evolve(self, n=1, dom=1, status=1000, time_limit=300):
         """ Run random agents n times
         n:  Number of agent invocations
         status: How frequently to output the current population
@@ -101,10 +99,13 @@ class Evo:
 
         self.remove_dominated()
 
+
     def __str__(self):
         """ Output the solutions in the population """
         rslt = ""
         for eval, sol in self.pop.items():
-            rslt += str(eval) + ":\t" + str(sol) + "\n"
+            # Convert numpy array to a string representation
+            sol_str = np.array2string(sol, precision=2, separator=',')
+            rslt += str(eval) + ":\t" + sol_str + "\n"
         return rslt
 
