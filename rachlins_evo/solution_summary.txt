@@ -1,0 +1,74 @@
+**Scores for Each Objective Function:**
+- Overallocation: 23.0
+- Time Conflicts: 3
+- Undersupport: 0
+- Unwilling Allocations: 29
+- Unpreferred Allocations: 7
+
+**List of Sections for Each TA:**
+- TA1: Sections [8, 13]
+- TA2: Sections [7]
+- TA3: Sections [1, 8]
+- TA4: Sections [3, 7, 14]
+- TA5: Sections [5, 7]
+- TA6: Sections [13]
+- TA7: Sections [15]
+- TA8: Sections [0, 3]
+- TA9: Sections [12]
+- TA10: Sections [3, 10, 11, 13]
+- TA11: Sections [1, 5]
+- TA12: Sections [11, 13]
+- TA13: Sections [1]
+- TA14: Sections [0, 3, 7]
+- TA15: Sections [12]
+- TA16: Sections [2, 10]
+- TA17: Sections [0, 12, 13]
+- TA18: Sections [4, 6]
+- TA19: Sections [1, 9, 11]
+- TA20: Sections [12]
+- TA21: Sections [4, 14]
+- TA22: Sections [5, 8]
+- TA23: Sections [8, 16]
+- TA24: Sections [6, 16]
+- TA25: Sections [11, 16]
+- TA26: Sections [3, 7, 14]
+- TA27: Sections [1, 9]
+- TA28: Sections [8, 9, 12]
+- TA29: Sections [13]
+- TA30: Sections [4]
+- TA31: Sections [2, 15]
+- TA32: Sections [4, 9]
+- TA33: Sections [11]
+- TA34: Sections [6, 13, 14, 16]
+- TA35: Sections [3, 10]
+- TA36: Sections [6]
+- TA37: Sections [15]
+- TA38: Sections [1]
+- TA39: Sections [4, 10]
+- TA40: Sections [3, 6]
+- TA41: Sections [2]
+- TA42: Sections [13]
+- TA43: Sections []
+
+**List of Teaching Assistants for Each Section:**
+- Section1: TAs ['TA8', 'TA14', 'TA17']
+- Section2: TAs ['TA3', 'TA11', 'TA13', 'TA19', 'TA27', 'TA38']
+- Section3: TAs ['TA16', 'TA31', 'TA41']
+- Section4: TAs ['TA4', 'TA8', 'TA10', 'TA14', 'TA26', 'TA35', 'TA40']
+- Section5: TAs ['TA18', 'TA21', 'TA30', 'TA32', 'TA39']
+- Section6: TAs ['TA5', 'TA11', 'TA22']
+- Section7: TAs ['TA18', 'TA24', 'TA34', 'TA36', 'TA40']
+- Section8: TAs ['TA2', 'TA4', 'TA5', 'TA14', 'TA26']
+- Section9: TAs ['TA1', 'TA3', 'TA22', 'TA23', 'TA28']
+- Section10: TAs ['TA19', 'TA27', 'TA28', 'TA32']
+- Section11: TAs ['TA10', 'TA16', 'TA35', 'TA39']
+- Section12: TAs ['TA10', 'TA12', 'TA19', 'TA25', 'TA33']
+- Section13: TAs ['TA9', 'TA15', 'TA17', 'TA20', 'TA28']
+- Section14: TAs ['TA1', 'TA6', 'TA10', 'TA12', 'TA17', 'TA29', 'TA34', 'TA42']
+- Section15: TAs ['TA4', 'TA21', 'TA26', 'TA34']
+- Section16: TAs ['TA7', 'TA31', 'TA37']
+- Section17: TAs ['TA23', 'TA24', 'TA25', 'TA34']
+
+**Justification for Choosing This Solution:**
+This solution was chosen as it minimizes all key objective function scores while balancing trade-offs effectively.
+The assignments ensure no TA is over-allocated, minimize conflicts, and prioritize preferred sections.

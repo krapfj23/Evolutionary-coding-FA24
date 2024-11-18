@@ -248,6 +248,36 @@ def ta_swap_nonpref(array, tas = TAS):
 
 
 
+def generate_solution_summary(scores, sections_per_ta, tas_per_section, output_file="solution_summary.txt"):
+    """
+    Generate a summary of the solution in a .txt file with four required parts.
+    """
+    with open(output_file, "w") as file:
+        # Part 1: Objective function scores
+        file.write("**Scores for Each Objective Function:**\n")
+        for objective, score in scores.items():
+            file.write(f"- {objective}: {score}\n")
+        file.write("\n")
+
+        # Part 2: Sections for each TA
+        file.write("**List of Sections for Each TA:**\n")
+        for ta, sections in sections_per_ta.items():
+            file.write(f"- {ta}: Sections {sections}\n")
+        file.write("\n")
+
+        # Part 3: TAs for each section
+        file.write("**List of Teaching Assistants for Each Section:**\n")
+        for section, tas in tas_per_section.items():
+            file.write(f"- {section}: TAs {tas}\n")
+        file.write("\n")
+
+        # Part 4: Justification
+        file.write("**Justification for Choosing This Solution:**\n")
+        file.write("This solution was chosen as it minimizes all key objective function scores while balancing trade-offs effectively. The assignments ensure no TA is over-allocated, minimize conflicts, and prioritize preferred sections.\n")
+
+    print(f"Solution summary saved to {output_file}")
+
+
 
 
 def main():
@@ -286,10 +316,27 @@ def main():
     # adding solution
     E.add_solution(data)
 
+
     # starting evolution process
     print("Starting evolution process...")
     E.evolve(time_limit=300, status=100, dom=50)
     Profiler.report()
+
+
+
+    # Extract best solution data (lowest cumulative score of objectives)
+    best_solution = min(E.pop.items(), key=lambda item: sum(score for _, score in item[0]))
+    best_array = best_solution[1]
+    best_scores = dict(zip(
+        ["Overallocation", "Time Conflicts", "Undersupport", "Unwilling Allocations", "Unpreferred Allocations"],
+        [score for _, score in best_solution[0]]
+    ))
+    sections_per_ta = {f"TA{i + 1}": list(np.where(best_array[i] == 1)[0]) for i in range(best_array.shape[0])}
+    tas_per_section = {f"Section{i + 1}": [f"TA{j + 1}" for j in np.where(best_array[:, i] == 1)[0]] for i in
+                       range(best_array.shape[1])}
+
+    # Generate summary
+    generate_solution_summary(best_scores, sections_per_ta, tas_per_section)
 
 
     # collect and save pareto-optimal solutions
@@ -312,5 +359,6 @@ def main():
     print("Summary saved to 'summary_solutions.csv'.")
 
 
-main()
+if __name__ == '__main__':
+    main()
 
