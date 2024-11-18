@@ -1,7 +1,7 @@
 """
 profiler.py
 A profiler class that demonstrates the use of decorators to support code profiling
-DS3500: Advanced Programming with Data (Prof. Rachlin)
+DS3500: Advanced Programming with Data
 """
 from collections import defaultdict
 import time

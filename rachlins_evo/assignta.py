@@ -41,6 +41,8 @@ SECTION_DICT = {17: 'R 1145-125', 1: 'W 950-1130', 2: 'W 950-1130', 3: 'W 950-11
                 6: 'W 250-430', 7: 'W 250-430', 8: 'W 250-430', 9: 'W 440-630', 10: 'R 950-1130', 11: 'R 950-1130',
                 12: 'R 1145-125', 13: 'R 1145-125', 14: 'R 1145-125', 15: 'R 250-430', 16: 'R 250-430', 0: None}
 
+ASSIGNS = TAS[["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]]
+
 def overallocation(tas, test):
     """Minimize overallocation of TAs (overallocation): Each TA specifies how many labs they can
        support (max_assigned column in tas.csv). If a TA requests at most 2 labs and you assign to them 5
@@ -195,28 +197,80 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
 
 
 
+def ta_swap_will(array, tas = TAS):
+    """
+    # Agent 3
+    Parameters:
+    array - a 2d array solution
+    tas - 2d array of preferences for each ta
+    Does: Finds tas who are in sections that they are willing to ta for but are not preferred,
+          swaps them with a ta who is assigned to a section they prefer
+    """
+    arrays = array[0]
+
+    for row, ta_row in enumerate(tas.values):
+        if 'W' in ta_row:
+            indexes = np.where(arrays[row] == 1)[0]
+            for i in indexes:
+                if tas.iloc[row, i] == 'W':
+                    unassigned_tas = tas[tas[str(i)] == 'P'].index
+                    if len(unassigned_tas) > 0:
+                        # Picking random TA
+                        random_ta_index = np.random.choice(unassigned_tas)
+
+                        # Swapping rows
+                        arrays[[row, random_ta_index]] = arrays[[random_ta_index, row]]
+                        print(f"Swapped TA {row} (willing) with TA {random_ta_index} (preferred) in section {i}.")
+                        break
+
+    return arrays
+
+
+
+
+def ta_swap_nonpref(array, tas = TAS):
+    """
+    # Agent 4
+    Parameters:
+        sol - a 2D array solution
+        tas - 2D array of preferences for each TA
+    Finds TAs that are assigned to unpreferred sections and swaps with a TA
+    that has that section as preferred but isn't assigned to it.
+    """
+    arrays = array[0]
+
+    for row, ta_row in enumerate(tas.values):
+        if 'U' in ta_row:
+            print(f"TA {row} has unpreferred sections: {ta_row}")
+            indexes = np.where(arrays[row] == 1)[0]
+            for i in indexes:
+                if tas.iloc[row, i] == 'U':  # Check if assigned to an unpreferred section
+                    unassigned_tas = tas[tas[str(i)] == 'P'].index
+                    if len(unassigned_tas) > 0:
+                        # Picking a random TA
+                        random_ta_index = np.random.choice(unassigned_tas)
+
+                        # Swapping rows
+                        arrays[[row, random_ta_index], :] = arrays[[random_ta_index, row], :]
+                        print(f"Swapped TA {row} (unpreferred) with TA {random_ta_index} (preferred) in section {i}.")
+                        break
+    return arrays
+
+
+
+
+
 def main():
     tas_min = np.array(SECTIONS["min_ta"]).reshape(1, -1)
-    assigns = TAS[["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]]
-    tas_1 = assigns.replace("U", 0)
+    tas_1 = ASSIGNS.replace("U", 0)
     tas_2unw = tas_1.replace("W", 1)
     tas_unw = tas_2unw.replace("P", 1)
-    tas1_unp = assigns.replace("U", 1)
+    tas1_unp = ASSIGNS.replace("U", 1)
     tas2_unp = tas1_unp.replace("W", 0)
     tas_unp = tas2_unp.replace("P", 1)
     tas_max = np.array(TAS["max_assigned"]).reshape(1, -1)
 
     data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
-
-    #print("Non pref", minimize_nonpref(data, tas_unp))
-    #print("Unw", minimize_unw(data, tas_unw))
-    #print("Under", minimize_under(data, tas_min))
-    #print("Over", overallocation(tas_max, data))
-    #test2 = np.loadtxt()
-    #test3 = np.loadtxt()
-    #print("TC", time_conflicts(data, SECTION_DICT))
-
-
 
     E = Evo()
 
@@ -230,12 +284,15 @@ def main():
     # adding agents
     E.add_agent("Swap TAs", swap_tas, k=1)
     E.add_agent("Balance Sections", balance_sections, k=1)
+    E.add_agent('ta_swap_will', ta_swap_will, k=1)
+    E.add_agent('ta_swap_nonpref', ta_swap_nonpref, k=1)
+
 
     E.add_solution(data)
 
 
     print("Starting evolution process...")
-    E.evolve(time_limit=300, status=100, dom=50)
+    E.evolve(time_limit=30, status=100, dom=50)
 
     # Collect and save Pareto-optimal solutions
     summary = []
