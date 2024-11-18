@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from jupyter_server.services.config.handlers import section_name_regex
 from evo import Evo
+from profiler import profile, Profiler
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -28,6 +29,8 @@ SECTION_DICT = {17: 'R 1145-125', 1: 'W 950-1130', 2: 'W 950-1130', 3: 'W 950-11
 
 ASSIGNS = TAS[["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]]
 
+
+@profile
 def overallocation(tas, test):
     """Minimize overallocation of TAs (overallocation): Each TA specifies how many labs they can
        support (max_assigned column in tas.csv). If a TA requests at most 2 labs and you assign to them 5
@@ -38,6 +41,7 @@ def overallocation(tas, test):
     positive_values = difference[difference > 0]
     return sum(positive_values)
 
+@profile
 def time_conflicts(test, section_dict):
     """
     2. Minimize time conflicts (conflicts): Minimize the number of TAs with one or more time conflicts. A
@@ -57,7 +61,7 @@ def time_conflicts(test, section_dict):
 
 
 
-
+@profile
 def minimize_under(test, section):
     """3. Minimize Under-Support (undersupport): If a section needs at least 3 TAs and you only assign 1,
     count that as 2 penalty points. Minimize the total penalty score across all sections. There is no
@@ -68,6 +72,7 @@ def minimize_under(test, section):
     positive_values = difference[difference < 0]
     return abs(sum(positive_values))
 
+@profile
 def minimize_unw(test, tas_unw):
     """Minimize the number of times you allocate a TA to a section they are unwilling to support
     (unwilling). You could argue this is really a hard constraint, but we will treat it as an objective to be
@@ -77,6 +82,7 @@ def minimize_unw(test, tas_unw):
     count = np.count_nonzero(difference == -1)
     return count
 
+@profile
 def minimize_nonpref(test, tas_clean):
     """5. Minimize the number of times you allocate a TA to a section where they said “willing” but not
     “preferred”. (unpreferred). In effect, we are trying to assign TAs to sections that they prefer. But we
@@ -90,6 +96,7 @@ def minimize_nonpref(test, tas_clean):
 
 # Agents to optimize solutions
 
+@profile
 def swap_tas(array, ta_data=TAS, max_assigned='max_assigned'):
     """
     Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred.
@@ -129,7 +136,7 @@ def swap_tas(array, ta_data=TAS, max_assigned='max_assigned'):
 
 
 
-
+@profile
 def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta_col='max_ta'):
     """
     Agent 2: Balances sections by reassigning TAs from randomly selected over-allocated sections to
@@ -181,7 +188,7 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
 
 
 
-
+@profile
 def ta_swap_will(array, tas = TAS):
     """
     # Agent 3
@@ -212,7 +219,7 @@ def ta_swap_will(array, tas = TAS):
 
 
 
-
+@profile
 def ta_swap_nonpref(array, tas = TAS):
     """
     # Agent 4
@@ -284,6 +291,7 @@ def main():
     # starting evolution process
     print("Starting evolution process...")
     E.evolve(time_limit=300, status=100, dom=50)
+    Profiler.report()
 
 
     # collect and save pareto-optimal solutions
