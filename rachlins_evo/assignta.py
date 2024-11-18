@@ -103,36 +103,43 @@ def minimize_nonpref(test, tas_clean):
 
 # Agents to optimize solutions
 
-def swap_tas(array, ta_data = TAS, max_assigned = 'max_assigned'):
+def swap_tas(array, ta_data=TAS, max_assigned='max_assigned'):
     """
-    Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred
+    Agent 1: Randomly swaps TA sections if TA is over max preferred with one that is under max preferred.
     """
     arrays = array[0]
     section_counts = np.sum(arrays, axis=1)
 
-    # identify over and under allocated TAs
+    # Identify over- and under-allocated TAs
     overallocated = [i for i in range(len(section_counts)) if section_counts[i] > ta_data.iloc[i][max_assigned]]
     underallocated = [i for i in range(len(section_counts)) if section_counts[i] < ta_data.iloc[i][max_assigned]]
 
-    if len(overallocated) == 0 and len(underallocated) == 0:
-        print('TAs allocated correctly, no changes needed')
+    # If no over-allocated or under-allocated TAs exist, do nothing
+    if not overallocated:
+        print("No over-allocated TAs. No swaps needed.")
+        return arrays
+    if not underallocated:
+        print("No under-allocated TAs. No swaps possible.")
+        return arrays
 
-    # picking random TA in over and under allocated lists
+    # Pick random over- and under-allocated TAs
     over_ta = random.choice(overallocated)
     under_ta = random.choice(underallocated)
 
-
-    over_ta_sections = np.where(arrays[over_ta] == 1)[0]  # Extract the indices of the sections
+    # Find sections assigned to the over-allocated TA
+    over_ta_sections = np.where(arrays[over_ta] == 1)[0]  # Indices of sections assigned to over_ta
 
     for section in over_ta_sections:
-        if arrays[under_ta, section] == 0:  # Check if the underallocated TA is not assigned to this section
+        # Check if the under-allocated TA can take this section
+        if arrays[under_ta, section] == 0:  # Ensure no duplication in assignment
             arrays[over_ta, section] = 0  # Remove section from over-allocated TA
             arrays[under_ta, section] = 1  # Assign section to under-allocated TA
             print(f"Swapped section {section} from TA {over_ta} to TA {under_ta}")
             return arrays
 
-    print('No swaps were made')
+    print("No valid swaps found.")
     return arrays
+
 
 
 
@@ -224,14 +231,29 @@ def main():
     E.add_agent("Swap TAs", swap_tas, k=1)
     E.add_agent("Balance Sections", balance_sections, k=1)
 
-
     E.add_solution(data)
 
-    E.evolve(time_limit=300, status=100)
 
-    print("Final population size:", len(E.pop))
+    print("Starting evolution process...")
+    E.evolve(time_limit=300, status=100, dom=50)
+
+    # Collect and save Pareto-optimal solutions
+    summary = []
     for eval, sol in E.pop.items():
-        print(f"Solution {eval}: {sol}")
+        result = {
+            "groupname": 'AJK',
+            "overallocation": eval[0][1],  # Score for overallocation
+            "conflicts": eval[1][1],  # Score for conflicts
+            "undersupport": eval[2][1],  # Score for undersupport
+            "unwilling": eval[3][1],  # Score for unwilling allocations
+            "unpreferred": eval[4][1],  # Score for unpreferred allocations
+        }
+        summary.append(result)
+
+    # Save summary to CSV
+    summary_df = pd.DataFrame(summary)
+    summary_df.to_csv("summary.csv", index=False)
+    print("Summary saved to 'summary.csv'.")
 
 
 main()

@@ -69,7 +69,51 @@ class Evo:
         nds = reduce(self.reduce_nds, self.pop.keys(), self.pop.keys())
         self.pop = {k: self.pop[k] for k in nds}
 
-    def evolve(self, n=100, dom=50, time_limit=None, status=10):
+
+    def evolve(self, time_limit=None, status=100, dom=50):
+        """
+        Run the evolutionary algorithm, stopping after the specified time limit.
+
+        Args:
+            time_limit (float): Time limit in seconds for the algorithm.
+            status (int): Number of iterations between status updates.
+            dom (int): Number of iterations between dominated solution removal.
+        """
+        assert time_limit is not None, "A time limit must be specified for the evolution process."
+
+        agent_names = list(self.agents.keys())
+        start_time = time.time()  # Record start time
+
+        iteration = 0
+        while True:
+            # Check if time limit has been exceeded
+            time_taken = time.time() - start_time
+            if time_taken >= time_limit:
+                print(f"Time limit of {time_limit} seconds reached.")
+                break
+
+            # Randomly pick an agent and run it
+            pick = rnd.choice(agent_names)
+            self.run_agent(pick)
+
+            # Remove dominated solutions periodically
+            if iteration % dom == 0:
+                self.remove_dominated()
+
+            # Print status updates periodically
+            if iteration % status == 0:
+                self.remove_dominated()
+                print(f"Iteration: {iteration}")
+                print(f"Population size: {len(self.pop)}")
+
+            iteration += 1  # Increment iteration count
+
+        # Final removal of dominated solutions
+        self.remove_dominated()
+
+
+    '''
+    def evolve(self, time_limit=None, status=100, dom=50):
         """ Run random agents n times
         n:  Number of agent invocations
         status: How frequently to output the current population
@@ -99,6 +143,8 @@ class Evo:
                 print(self)
 
         self.remove_dominated()
+
+    '''
 
 
     def __str__(self):
