@@ -1,7 +1,8 @@
 """
 File: assignta.py
 Author: Rishi Kamtam, Jeffrey Krapf, Alexander Tu
-Description:
+Description: This program optimizes TA assignments to sections by minimizing overallocation, time conflicts,
+undersupport, and assignments to unwilling or unpreferred sections using an evolutionary algorithm framework
 """
 
 
