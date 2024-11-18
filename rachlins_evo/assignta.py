@@ -1,26 +1,10 @@
 """
-Minimize overallocation of TAs (overallocation): Each TA specifies how many labs they can
-support (max_assigned column in tas.csv). If a TA requests at most 2 labs and you assign to them 5
-labs, that’s an overallocation penalty of 3. Compute the objective by summing the overallocation
-penalty over all TAs. There is no minimum allocation.
-
-2. Minimize time conflicts (conflicts): Minimize the number of TAs with one or more time conflicts. A
-time conflict occurs if you assign a TA to two labs meeting at the same time. If a TA has multiple
-time conflicts, still count that as one overall time conflict for that TA.
-
-3. Minimize Under-Support (undersupport): If a section needs at least 3 TAs and you only assign 1,
-count that as 2 penalty points. Minimize the total penalty score across all sections. There is no
-penalty for assigning too many TAs. You can never have enough TAs.
-
-4. Minimize the number of times you allocate a TA to a section they are unwilling to support
-(unwilling). You could argue this is really a hard constraint, but we will treat it as an objective to be
-minimized instead.
-
-5. Minimize the number of times you allocate a TA to a section where they said “willing” but not
-“preferred”. (unpreferred). In effect, we are trying to assign TAs to sections that they prefer. But we
-want to frame every objective a minimization objective. So, if your solution score has unwilling=0
-and unpreferred=0, then all TAs are assigned to sections they prefer!
+File: assignta.py
+Author: Rishi Kamtam, Jeffrey Krapf, Alexander Tu
+Description:
 """
+
+
 import random
 import pandas as pd
 import numpy as np
@@ -31,10 +15,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
+# defining global variables
 
 SECTIONS = pd.read_csv("sections.csv")
 TAS = pd.read_csv("tas.csv")
-
 
 
 SECTION_DICT = {17: 'R 1145-125', 1: 'W 950-1130', 2: 'W 950-1130', 3: 'W 950-1130', 4: 'W 1145-125', 5: 'W 1145-125',
@@ -261,6 +245,9 @@ def ta_swap_nonpref(array, tas = TAS):
 
 
 def main():
+
+    # Prepare data for fitness evaluation and agents
+
     tas_min = np.array(SECTIONS["min_ta"]).reshape(1, -1)
     tas_1 = ASSIGNS.replace("U", 0)
     tas_2unw = tas_1.replace("W", 1)
@@ -270,8 +257,10 @@ def main():
     tas_unp = tas2_unp.replace("P", 1)
     tas_max = np.array(TAS["max_assigned"]).reshape(1, -1)
 
+    # Load initial solution from CSV
     data = np.loadtxt("test1.csv", delimiter=",", skiprows=0)
 
+    # Initialize Evo environment
     E = Evo()
 
     # adding objectives
@@ -288,13 +277,15 @@ def main():
     E.add_agent('ta_swap_nonpref', ta_swap_nonpref, k=1)
 
 
+    # adding solution
     E.add_solution(data)
 
-
+    # starting evolution process
     print("Starting evolution process...")
-    E.evolve(time_limit=30, status=100, dom=50)
+    E.evolve(time_limit=300, status=100, dom=50)
 
-    # Collect and save Pareto-optimal solutions
+
+    # collect and save pareto-optimal solutions
     summary = []
     for eval, sol in E.pop.items():
         result = {
@@ -307,10 +298,11 @@ def main():
         }
         summary.append(result)
 
-    # Save summary to CSV
+
+    # saving summary to CSV
     summary_df = pd.DataFrame(summary)
-    summary_df.to_csv("summary.csv", index=False)
-    print("Summary saved to 'summary.csv'.")
+    summary_df.to_csv("summary_solutions.csv", index=False)
+    print("Summary saved to 'summary_solutions.csv'.")
 
 
 main()

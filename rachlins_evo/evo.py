@@ -1,4 +1,6 @@
 """
+File: evo.py
+Author: Rishi Kamtam, Jeffrey Krapf, Alexander Tu
 evo.py: An evolutionary computing framework
 """
 
@@ -112,39 +114,6 @@ class Evo:
         self.remove_dominated()
 
 
-    '''
-    def evolve(self, time_limit=None, status=100, dom=50):
-        """ Run random agents n times
-        n:  Number of agent invocations
-        status: How frequently to output the current population
-        """
-        agent_names = list(self.agents.keys())
-
-        start_time = time.time()
-
-        for i in range(n):
-
-            # checking if time limit has been exceeded
-            time_taken = time.time() - start_time
-            if time_taken >= time_limit:
-                print(f"Time limit of {time_limit} has been reached")
-                break
-
-            pick = rnd.choice(agent_names)
-            self.run_agent(pick)
-
-            if i % dom == 0:
-                self.remove_dominated()
-
-            if i % status == 0:
-                self.remove_dominated()
-                print("Iteration: ", i)
-                print("Size     : ", len(self.pop))
-                print(self)
-
-        self.remove_dominated()
-
-    '''
 
 
     def __str__(self):

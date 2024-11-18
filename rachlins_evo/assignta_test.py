@@ -1,7 +1,15 @@
+"""
+File: assignta_test.py
+Author: Rishi Kamtam, Jeffrey Krapf, Alexander Tu
+File which tests that all of the objectives are scoring the solutions correctly
+"""
+
+
 import pytest
 import assignta as at
 import pandas as pd
 import numpy as np
+
 
 
 @pytest.fixture

@@ -1,5 +1,6 @@
 """
 profiler.py
+Author: Rishi Kamtam, Jeffrey Krapf, Alexander Tu
 A profiler class that demonstrates the use of decorators to support code profiling
 DS3500: Advanced Programming with Data
 """
