@@ -152,8 +152,6 @@ def balance_sections(array, section_data = SECTIONS, min_ta_col='min_ta', max_ta
     overallocated_sec = [i for i in range(len(ta_counts)) if ta_counts[i] > section_data.iloc[i][max_ta_col]]
     underallocated_sec = [i for i in range(len(ta_counts)) if ta_counts[i] < section_data.iloc[i][min_ta_col]]
 
-    print("TA Counts:", ta_counts)
-    print("Under-allocated Sections:", underallocated_sec)
 
     if not underallocated_sec:
         print("No under-allocated sections. Rebalancing not needed.")
